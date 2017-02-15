@@ -1,6 +1,6 @@
 from selenium import webdriver
 from faker import Factory # for generating fake data
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, ElementNotVisibleException
 import sys
 
 driver = webdriver.Chrome()
@@ -15,10 +15,19 @@ except NoSuchElementException:
     driver.close()
     sys.exit(0)
 
-search = driver.find_element_by_name('s')
-search.send_keys('offgrid')
-search.submit()
 
+try:
+    search = driver.find_element_by_name('s')
+    search.send_keys('offgrid')
+    search.submit()
+except NoSuchElementException:
+    print('Failed, Can\'t find search area')
+    driver.close()
+    sys.exit(0)
+except ElementNotVisibleException:
+    print('Failed, Search area is exists, but not visible')
+    driver.close()
+    sys.exit(0)
 
 try:
     offgrid = driver.find_element_by_xpath('//*[@title="Permalink to Off.Grid:Electric Surge"]')
